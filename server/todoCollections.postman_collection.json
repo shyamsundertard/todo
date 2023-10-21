@@ -1,0 +1,77 @@
+{
+	"info": {
+		"_postman_id": "f0baa80e-a856-417e-92ad-18b6267aeb4c",
+		"name": "todoCollections",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "30655029"
+	},
+	"item": [
+		{
+			"name": "http://localhost:8001/todos/search?search=content",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "type",
+						"value": "author",
+						"type": "default",
+						"disabled": true
+					},
+					{
+						"key": "n",
+						"value": "11",
+						"type": "default",
+						"disabled": true
+					}
+				],
+				"url": "http://localhost:8001/todos/id/2"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8001/todos",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"title\": \"Shyam\",\r\n    \"type\": \"type\",\r\n    \"content\": \"content\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:8001/todos"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8001/todos/title/2",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"title\": \"Shyam\",\r\n    \"type\": \"type\",\r\n    \"content\": \"content\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:8001/todos/1"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8001/todos/id/7",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": "http://localhost:8001/todos/id/7"
+			},
+			"response": []
+		}
+	]
+}
