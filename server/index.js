@@ -1,188 +1,192 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const fs = require("fs");
-
+const cors = require("cors");
+const pool = require("./db");
 const app = express();
 
 app.use(bodyParser.json());
+app.use(cors());
+app.use(express.json());
 
-let todosData = require('./todos.json');
+//allTodos
+app.get('/todos', async(req, res) => {
+  try{
+    const allTodos = await pool.query("SELECT * FROM todo");
+    res.json(allTodos.rows);
 
-function findIndex(arr, id) { 
-  for (let i = 0; i < arr.length; i++) {
-    if (arr[i].id === id) return i;
+  }catch(error) {
+    res.json("todo not exist");
+    // console.error(err.message);
   }
-  return -1;
-}
-
-function removeAtIndex(arr, index) {
-  let newArray = [];
-  for (let i = 0; i < arr.length; i++) {
-    if (i !== index) newArray.push(arr[i]);
-  }
-  return newArray;
-}
-
-app.get('/todos', (req, res) => {
-  fs.readFile("todos.json", "utf8", (err, data) => {
-    if (err) throw err;
-    res.json(JSON.parse(data));
-  });
 });
 
-app.get('/todos/id/:id', (req, res) => {
-  let id = req.params.id;
-  let result = todosData.info.find((info)=>{
-    if(info.id == id ) return true;
-    else return false
-  })
-    if (result === undefined) {
-      res.status(404).send();
-    } else {
-      res.json(result);
+// todosById
+app.get('/todos/id/:id', async(req, res) => {
+  try{
+    const {id} = req.params;
+    const todo = await pool.query("SELECT * FROM todo IF todo_id = $1",[id]);
+    res.json(todo.rows[0]);
+  }catch(error){
+    res.json("todo not exist");
+  }
+  });
+
+// Type search 
+app.get('/todos/type/:type', async(req, res) => {
+  try {
+   const {type} = req.params;
+   const searchTodo = await pool.query("SELECT * FROM todo WHERE TYPE = $1 ",[type]);
+   res.json(searchTodo.rows);
+ } catch (error) {
+    res.json("todo not exist");
+ }     
+ });
+
+ // Combined search 
+app.get('/todos', async(req, res) => {
+  try {
+   const  todo= req.query.todo;
+   if(todo === todo_id){
+    const idTodo = await pool.query("SELECT * FROM todo WHERE todo_id =$1",[todo]);
+   res.json(idTodo.rows);
+   } else if(type === todo){
+    const typeTodo = await pool.query("SELECT * FROM todo WHERE TYPE = $1",[todo]);
+   res.json(typeTodo.rows);
+   } else {
+    const allTodos = await pool.query("SELECT * FROM todo");
+    res.json(allTodos.rows);
+   }
+   
+ } catch (error) {
+    res.json("todo not exist");
+ }     
+ });
+
+    // General search 
+  app.get('/todos/search', async(req, res) => {
+    try {
+      const search = req.query.search;
+      const searchTodo = await pool.query("SELECT * FROM todo WHERE CONTENT LIKE $1 OR TYPE LIKE $2",['%' + search + '%','%' + search + '%']);
+      res.json(searchTodo.rows);
+    } catch (error) {
+      res.json("todo not exist");
+      
+    }   
+  });
+
+  // In Database
+  app.post('/todos', async(req, res) => {
+    try {
+      const { title, type,content } = req.body;
+      const newTodo = await pool.query(
+        "INSERT INTO todo (title, type,content) VALUES($1,$2,$3) RETURNING * ",
+        [title , type , content]
+      );
+      res.json(newTodo.rows[0]);
+
+    }catch (err) {
+      console.error(err.message);
+
     }
   });
 
+  // // Update al by id
+  // app.put('/todos/:id', async(req,res)=>{
+  //   try {
+  //     const {id} = req.params;
+  //     const titl = req.body.title;
+  //     const typ = req.body.type;
+  //     const cont = req.body.content;
+  //     if(todo_it == id){
+  //       const updateTodo = await pool.query(
+  //         "UPDATE todo SET TITLE = $1 WHERE todo_id = $2",
+  //         [titl,id]
+  //       );
+  //     }
+  //     if(type == typ){
+  //       const updateTodo = await pool.query(
+  //         "UPDATE todo SET TYPE = $3 WHERE todo_id = $4",
+  //         [typ,id]
+  //       );
+  //     }
+  //     if(content == cont){
+  //       const updateTodo = await pool.query(
+  //         "UPDATE todo SET CONTENT = $5 WHERE todo_id = $6",
+  //         [cont,id]
+  //       );
+  //     }
+   
+  //     res.json("Todo was updated");
+      
+  //   } catch (error) {
+  //     res.json("Todo not exist");
+      
+  //   }
+  // });
 
-  // Content search content
-  app.get('/todos/params', (req, res) => {
-    let content = req.query.content ;
-    let newTodoData = todosData.info.filter((info)=>{
-      if(info.content.includes(content)) return true;
-      else return false;
-    });
-      res.json(newTodoData);
-
-  });
-
-    // Content search 
-  app.get('/todos/search', (req, res) => {
-    const search = req.query.search;
-    let newTodoData = todosData.info.filter((info)=>{
-      if(info.content.includes(search) || info.type.includes(search)) return true;
-      else return false;
-    });
-    res.json(newTodoData);    
-
-  });
-
-app.post('/todos', (req, res) => {
-    const newId = todosData.id;
-  const newTodo = {
-    id: newId,
-    title: req.body.title,
-    type : req.body.type,
-    content: req.body.content
-  };
-
-  // Increment in value of id of todo data
-  todosData.id += 1;
-  
-  todosData.info.push(newTodo);
-
-    fs.writeFile("todos.json", JSON.stringify(todosData, null, 2), (err) => {
-      if (err) throw err;
-      res.status(201).json(newTodo);
-    });
-  });
-
-app.put('/todos/title/:id', (req, res) => {
-    const todoIndex = findIndex(todosData.info, parseInt(req.params.id));
-    const cont = todosData.info[todoIndex].content;
-    if (todoIndex === -1) {
-      res.status(404).send();
-    } else {
-      const updatedTodo = {
-        id: todosData.info[todoIndex].id,
-        title: req.body.title,
-        type : req.body.type,
-        content: cont
-      };
-      todosData.info[todoIndex] = updatedTodo;
-      fs.writeFile("todos.json", JSON.stringify(todosData,null,2), (err) => {
-        if (err) throw err;
-        res.status(200).json(updatedTodo);
-      });
+  // Update title by id
+  app.put('/todos/title/:id', async(req,res)=>{
+    try {
+      const {id} = req.params;
+      const {title} = req.body;
+      const updateTodo = await pool.query(
+        "UPDATE todo SET TITLE = $1 WHERE todo_id = $2",
+        [title,id]
+      );
+      res.json("Todo was updated");
+      
+    } catch (error) {
+      res.json("Todo not exist");
+      
     }
   });
 
-  app.put('/todos/content/:id', (req, res) => {
-    const todoIndex = findIndex(todosData.info, parseInt(req.params.id));
-    const titl = todosData.info[todoIndex].title;
-    if (todoIndex === -1) {
-      res.status(404).send();
-    } else {
-      const updatedTodo = {
-        id: todosData.info[todoIndex].id,
-        title: titl,
-        type : req.body.type,
-        content: req.body.content
-      };
-      todosData.info[todoIndex] = updatedTodo;
-      fs.writeFile("todos.json", JSON.stringify(todosData,null,2), (err) => {
-        if (err) throw err;
-        res.status(200).json(updatedTodo);
-      });
+  // Update type by id
+  app.put('/todos/type/:id', async(req,res)=>{
+    try {
+      const {id} = req.params;
+      const {type} = req.body;
+      const updateTodo = await pool.query(
+        "UPDATE todo SET TYPE = $1 WHERE todo_id = $2",
+        [type,id]
+      );
+      res.json("Todo was updated");
+      
+    } catch (error) {
+      res.json("Todo not exist");
+      
     }
   });
 
-      app.put('/todos/type/:id', (req, res) => {
-        const todoIndex = findIndex(todosData.info, parseInt(req.params.id));
-        const typ = todosData.info[todoIndex].type;
-        if (todoIndex === -1) {
-          res.status(404).send();
-        } else {
-          const updatedTodo = {
-            id: todosData.info[todoIndex].id,
-            title: req.body.title,
-            type : typ,
-            content: req.body.content
-          };
-          todosData.info[todoIndex] = updatedTodo;
-      fs.writeFile("todos.json", JSON.stringify(todosData,null,2), (err) => {
-        if (err) throw err;
-        res.status(200).json(updatedTodo);
-      });
+  // Update content by id
+  app.put('/todos/content/:id', async(req,res)=>{
+    try {
+      const {id} = req.params;
+      const {content} = req.body;
+      const updateTodo = await pool.query(
+        "UPDATE todo SET CONTENT = $1 WHERE todo_id = $2",
+        [content,id]
+      );
+      res.json("Todo was updated");
+      
+    } catch (error) {
+      res.json("Todo not exist");
+      
     }
   });
 
+// Delete by id or type
+app.delete('/todos/:param', async(req,res)=>{
+  console.log("vtrfr")
+  const { param } = req.params;
+  try {
+    const deleteTodo = await pool.query("DELETE FROM todo WHERE todo_id = $1 OR TYPE = $2",[param, param ]);
+    res.json("Todo with ID or Type " + param + " was deleted");
 
-app.delete('/todos/:id', (req, res) => {
-
-    const todoIndex = findIndex(todosData.info, parseInt(req.params.id));
-  
-    if (todoIndex === -1) {
-      res.status(404).send({
-        "error": "todo not found"
-      });
-    } else {
-      todosData.info = removeAtIndex(todosData.info, todoIndex);
-      fs.writeFile("todos.json", JSON.stringify(todosData, null, 2), (err) => {
-        if (err) throw err;
-      });
-      res.status(200).send({
-        "message":"todo successfully deleted"});
-
-    }
-  });
-  app.delete('/todos/delete/:id', (req, res) => {
-
-    const todoIndex = findIndex(todosData.info, parseInt(req.params.id));
-  
-    if (todoIndex === -1) {
-      res.status(404).send({
-        "error": "todo not found"
-      });
-    } else {
-      todosData.info = removeAtIndex(todosData.info, todoIndex);
-      fs.writeFile("todos.json", JSON.stringify(todosData, null, 2), (err) => {
-        if (err) throw err;
-      });
-      res.status(200).send({
-        "message":"todo successfully deleted"});
-
-    }
-  });
+  } catch (error) {
+    res.status(404).json("Todo with the specified " + param + " does not exist");
+  }
+});
 
 // for all other routes, return 404
 app.use((req, res, next) => {
