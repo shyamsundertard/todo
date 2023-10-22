@@ -24,7 +24,24 @@
 						"disabled": true
 					}
 				],
-				"url": "http://localhost:8001/todos/id/2"
+				"url": {
+					"raw": "http://localhost:8001/todos",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8001",
+					"path": [
+						"todos"
+					],
+					"query": [
+						{
+							"key": "todo",
+							"value": "1",
+							"disabled": true
+						}
+					]
+				}
 			},
 			"response": []
 		},
@@ -35,7 +52,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"title\": \"Shyam\",\r\n    \"type\": \"type\",\r\n    \"content\": \"content\"\r\n}",
+					"raw": "{\r\n    \"title\": \"Goa\",\r\n    \"type\": \"Travel\",\r\n    \"content\": \"Enjoy and have fun\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -53,23 +70,112 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"title\": \"Shyam\",\r\n    \"type\": \"type\",\r\n    \"content\": \"content\"\r\n}",
+					"raw": "{\r\n    \"title\": \"Shyam2\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
 						}
 					}
 				},
-				"url": "http://localhost:8001/todos/1"
+				"url": "http://localhost:8001/todos/title/10"
 			},
 			"response": []
 		},
 		{
-			"name": "http://localhost:8001/todos/id/7",
+			"name": "http://localhost:8001/todos/id/2",
 			"request": {
 				"method": "DELETE",
 				"header": [],
-				"url": "http://localhost:8001/todos/id/7"
+				"url": "http://localhost:8001/todos/id/2"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8001/todos/id/2",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:8001/todos/id/2"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8001/todos/type/type1",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:8001/todos/type/type1"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8001/todos/search?search=type1",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8001/todos/search?search=type1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8001",
+					"path": [
+						"todos",
+						"search"
+					],
+					"query": [
+						{
+							"key": "search",
+							"value": "type1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8001/todos/type/10",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"type\": \"type2\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:8001/todos/type/10"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8001/todos/content/10",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"content\": \"content2\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:8001/todos/content/10"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8001/todos/type/content1",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": "http://localhost:8001/todos/type/content1"
 			},
 			"response": []
 		}

@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require("cors");
-const pool = require("./db");
+const { pool, dbClient,tClient } = require('./db');
 const app = express();
 
 app.use(bodyParser.json());
@@ -24,7 +24,7 @@ app.get('/todos', async(req, res) => {
 app.get('/todos/id/:id', async(req, res) => {
   try{
     const {id} = req.params;
-    const todo = await pool.query("SELECT * FROM todo IF todo_id = $1",[id]);
+    const todo = await pool.query("SELECT * FROM todo WHERE todo_id = $1",[id]);
     res.json(todo.rows[0]);
   }catch(error){
     res.json("todo not exist");
@@ -37,26 +37,6 @@ app.get('/todos/type/:type', async(req, res) => {
    const {type} = req.params;
    const searchTodo = await pool.query("SELECT * FROM todo WHERE TYPE = $1 ",[type]);
    res.json(searchTodo.rows);
- } catch (error) {
-    res.json("todo not exist");
- }     
- });
-
- // Combined search 
-app.get('/todos', async(req, res) => {
-  try {
-   const  todo= req.query.todo;
-   if(todo === todo_id){
-    const idTodo = await pool.query("SELECT * FROM todo WHERE todo_id =$1",[todo]);
-   res.json(idTodo.rows);
-   } else if(type === todo){
-    const typeTodo = await pool.query("SELECT * FROM todo WHERE TYPE = $1",[todo]);
-   res.json(typeTodo.rows);
-   } else {
-    const allTodos = await pool.query("SELECT * FROM todo");
-    res.json(allTodos.rows);
-   }
-   
  } catch (error) {
     res.json("todo not exist");
  }     
@@ -89,40 +69,6 @@ app.get('/todos', async(req, res) => {
 
     }
   });
-
-  // // Update al by id
-  // app.put('/todos/:id', async(req,res)=>{
-  //   try {
-  //     const {id} = req.params;
-  //     const titl = req.body.title;
-  //     const typ = req.body.type;
-  //     const cont = req.body.content;
-  //     if(todo_it == id){
-  //       const updateTodo = await pool.query(
-  //         "UPDATE todo SET TITLE = $1 WHERE todo_id = $2",
-  //         [titl,id]
-  //       );
-  //     }
-  //     if(type == typ){
-  //       const updateTodo = await pool.query(
-  //         "UPDATE todo SET TYPE = $3 WHERE todo_id = $4",
-  //         [typ,id]
-  //       );
-  //     }
-  //     if(content == cont){
-  //       const updateTodo = await pool.query(
-  //         "UPDATE todo SET CONTENT = $5 WHERE todo_id = $6",
-  //         [cont,id]
-  //       );
-  //     }
-   
-  //     res.json("Todo was updated");
-      
-  //   } catch (error) {
-  //     res.json("Todo not exist");
-      
-  //   }
-  // });
 
   // Update title by id
   app.put('/todos/title/:id', async(req,res)=>{
@@ -175,16 +121,27 @@ app.get('/todos', async(req, res) => {
     }
   });
 
-// Delete by id or type
-app.delete('/todos/:param', async(req,res)=>{
-  console.log("vtrfr")
-  const { param } = req.params;
+// Delete by id 
+app.delete('/todos/id/:id', async(req,res)=>{
   try {
-    const deleteTodo = await pool.query("DELETE FROM todo WHERE todo_id = $1 OR TYPE = $2",[param, param ]);
-    res.json("Todo with ID or Type " + param + " was deleted");
+    const { id } = req.params;
+    const deleteTodo = await pool.query("DELETE FROM todo WHERE todo_id = $1",[id]);
+    res.json("Todo with ID " + id + "  deleted");
 
   } catch (error) {
-    res.status(404).json("Todo with the specified " + param + " does not exist");
+    res.status(404).json("Todo with the specified ID does not exist");
+  }
+});
+
+// Delete by type
+app.delete('/todos/type/:type', async(req,res)=>{
+  try {
+    const { type } = req.params;
+    const deleteTodo = await pool.query("DELETE FROM todo WHERE TYPE = $1",[type]);
+    res.json("Todo with Type " + type + " was deleted");
+
+  } catch (error) {
+    res.status(404).json("Todo with the specified TYPE does not exist");
   }
 });
 
