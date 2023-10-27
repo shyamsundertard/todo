@@ -1,8 +1,10 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const cors = require("cors");
-const { pool, dbClient,tClient } = require('./db');
+import { PrismaClient } from '@prisma/client'
+import express from 'express';
+import bodyParser from 'body-parser';
+import cors from 'cors';
+
 const app = express();
+const prisma = new PrismaClient();
 
 app.use(bodyParser.json());
 app.use(cors());
@@ -11,137 +13,179 @@ app.use(express.json());
 //allTodos
 app.get('/todos', async(req, res) => {
   try{
-    const allTodos = await pool.query("SELECT * FROM todo");
-    res.json(allTodos.rows);
-
-  }catch(error) {
-    res.json("todo not exist");
-    // console.error(err.message);
+    const allTodos = await prisma.todo.findMany({
+    });
+    res.json(allTodos);
+  }catch(e) {
+    res.json(e);
+  } finally {
+    await prisma.$disconnect();
   }
 });
 
 // todosById
 app.get('/todos/id/:id', async(req, res) => {
   try{
-    const {id} = req.params;
-    const todo = await pool.query("SELECT * FROM todo WHERE todo_id = $1",[id]);
-    res.json(todo.rows[0]);
+    const id = req.params.id;
+    const todo = await prisma.todo.findUnique({
+      where: {
+        todo_id: parseInt(id)
+      }
+    });
+    res.json(todo);
   }catch(error){
-    res.json("todo not exist");
+    res.json("Todo not exist");
+  }finally {
+    await prisma.$disconnect();
   }
   });
 
-// Type search 
+// Title  
+app.get('/todos/title/:title', async(req, res) => {
+  try {
+   const {title} = req.params;
+   const searchTodo = await prisma.todo.findMany({
+          where:{
+            title: {
+              contains: title,
+              mode: 'insensitive'
+            }
+          }
+   });
+   res.json(searchTodo);
+ } catch (error) {
+    res.json("todo not exist");
+ }  finally {
+  await prisma.$disconnect();
+}   
+ });
+
+ // Type  
 app.get('/todos/type/:type', async(req, res) => {
   try {
    const {type} = req.params;
-   const searchTodo = await pool.query("SELECT * FROM todo WHERE TYPE = $1 ",[type]);
-   res.json(searchTodo.rows);
+   const searchTodo = await prisma.todo.findMany({
+          where:{
+            type: {
+              contains: type,
+              mode: 'insensitive'
+            }
+          }
+   });
+   res.json(searchTodo);
  } catch (error) {
     res.json("todo not exist");
- }     
+ }  finally {
+  await prisma.$disconnect();
+}   
  });
 
     // General search 
   app.get('/todos/search', async(req, res) => {
     try {
       const search = req.query.search;
-      const searchTodo = await pool.query("SELECT * FROM todo WHERE CONTENT LIKE $1 OR TYPE LIKE $2",['%' + search + '%','%' + search + '%']);
-      res.json(searchTodo.rows);
+      const searchTodo = await prisma.todo.findMany({
+              where:{
+                OR:[
+                  {
+                    type:{
+                      contains: search,
+                      mode: 'insensitive'
+                    }
+                  },{
+                    content:{
+                      contains: search,
+                      mode: 'insensitive'
+                    }
+                  }
+                ]
+              }
+      });
+      res.json(searchTodo);
     } catch (error) {
       res.json("todo not exist");
       
-    }   
+    }   finally {
+      await prisma.$disconnect();
+    }
   });
 
   // In Database
   app.post('/todos', async(req, res) => {
     try {
-      const { title, type,content } = req.body;
-      const newTodo = await pool.query(
-        "INSERT INTO todo (title, type,content) VALUES($1,$2,$3) RETURNING * ",
-        [title , type , content]
-      );
-      res.json(newTodo.rows[0]);
-
-    }catch (err) {
-      console.error(err.message);
-
+      await prisma.todo.create({
+        data: req.body
+      });
+      res.json("Todo created successfully");      
+    } catch (e) {
+      console.error(e);
+      
+    } finally {
+      await prisma.$disconnect();
     }
+   
   });
 
-  // Update title by id
-  app.put('/todos/title/:id', async(req,res)=>{
+  //Update by id
+  app.put('/todos/:id',async(req,res)=>{
     try {
       const {id} = req.params;
-      const {title} = req.body;
-      const updateTodo = await pool.query(
-        "UPDATE todo SET TITLE = $1 WHERE todo_id = $2",
-        [title,id]
-      );
-      res.json("Todo was updated");
+      const {title,type,content} = req.body;
+      const updateData ={};
+
+      if (title) {
+        updateData.title = title;
+      }
+  
+      if (type) {
+        updateData.type = type;
+      }
+  
+      if (content) {
+        updateData.content = content;
+      }
+
+      const updateTodo = await prisma.todo.update({
+        where:{
+          todo_id: parseInt(id)
+        },
+        data:updateData
+      });
+      res.json("Todo updated successfully");
       
-    } catch (error) {
-      res.json("Todo not exist");
-      
+    } catch (e) {
+      res.json(e);
+    } finally {
+      await prisma.$disconnect();
     }
   });
 
-  // Update type by id
-  app.put('/todos/type/:id', async(req,res)=>{
-    try {
-      const {id} = req.params;
-      const {type} = req.body;
-      const updateTodo = await pool.query(
-        "UPDATE todo SET TYPE = $1 WHERE todo_id = $2",
-        [type,id]
-      );
-      res.json("Todo was updated");
-      
-    } catch (error) {
-      res.json("Todo not exist");
-      
-    }
-  });
-
-  // Update content by id
-  app.put('/todos/content/:id', async(req,res)=>{
-    try {
-      const {id} = req.params;
-      const {content} = req.body;
-      const updateTodo = await pool.query(
-        "UPDATE todo SET CONTENT = $1 WHERE todo_id = $2",
-        [content,id]
-      );
-      res.json("Todo was updated");
-      
-    } catch (error) {
-      res.json("Todo not exist");
-      
-    }
-  });
-
-// Delete by id 
-app.delete('/todos/id/:id', async(req,res)=>{
+// Delete  
+app.delete('/todos', async(req,res)=>{
   try {
-    const { id } = req.params;
-    const deleteTodo = await pool.query("DELETE FROM todo WHERE todo_id = $1",[id]);
-    res.json("Todo with ID " + id + "  deleted");
+    const {id,type} = req.query;
 
-  } catch (error) {
-    res.status(404).json("Todo with the specified ID does not exist");
-  }
-});
+    if (!id && !type) {
+      return res.status(400).json({ error: 'Either provide "id" or "type" in the query parameters to delete .' });
+    }
 
-// Delete by type
-app.delete('/todos/type/:type', async(req,res)=>{
-  try {
-    const { type } = req.params;
-    const deleteTodo = await pool.query("DELETE FROM todo WHERE TYPE = $1",[type]);
-    res.json("Todo with Type " + type + " was deleted");
+    const deleteTodo = await prisma.todo.deleteMany({
+      where: {
+        OR:[
+          {
+            todo_id : id? parseInt(id) : undefined,
+          },{
+            type : type || undefined,
+          }
+        ]
+      }
+    });
+    res.json("Todo deleted");
 
-  } catch (error) {
-    res.status(404).json("Todo with the specified TYPE does not exist");
+  } catch (e) {
+    res.status(404).json(e);
+  }finally {
+    await prisma.$disconnect();
   }
 });
 

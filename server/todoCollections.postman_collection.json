@@ -7,6 +7,42 @@
 	},
 	"item": [
 		{
+			"name": "http://localhost:8001/todos",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"title\": \"Assignment5\",\r\n    \"type\": \"qwert\",\r\n    \"content\": \"Complete it on time\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:8001/todos"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8001/todos",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"todo_id\": 10,\r\n    \"title\": \"Assignment4\",\r\n    \"type\": \"qwert\",\r\n    \"content\": \"Complete it on time\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:8001/todos"
+			},
+			"response": []
+		},
+		{
 			"name": "http://localhost:8001/todos/search?search=content",
 			"request": {
 				"method": "GET",
@@ -46,56 +82,11 @@
 			"response": []
 		},
 		{
-			"name": "http://localhost:8001/todos",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"title\": \"Goa\",\r\n    \"type\": \"Travel\",\r\n    \"content\": \"Enjoy and have fun\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": "http://localhost:8001/todos"
-			},
-			"response": []
-		},
-		{
-			"name": "http://localhost:8001/todos/title/2",
-			"request": {
-				"method": "PUT",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"title\": \"Shyam2\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": "http://localhost:8001/todos/title/10"
-			},
-			"response": []
-		},
-		{
-			"name": "http://localhost:8001/todos/id/2",
-			"request": {
-				"method": "DELETE",
-				"header": [],
-				"url": "http://localhost:8001/todos/id/2"
-			},
-			"response": []
-		},
-		{
 			"name": "http://localhost:8001/todos/id/2",
 			"request": {
 				"method": "GET",
 				"header": [],
-				"url": "http://localhost:8001/todos/id/2"
+				"url": "http://localhost:8001/todos/id/1"
 			},
 			"response": []
 		},
@@ -104,7 +95,7 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"url": "http://localhost:8001/todos/type/type1"
+				"url": "http://localhost:8001/todos/type/stud"
 			},
 			"response": []
 		},
@@ -114,7 +105,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8001/todos/search?search=type1",
+					"raw": "http://localhost:8001/todos/search?search=tra",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -127,7 +118,7 @@
 					"query": [
 						{
 							"key": "search",
-							"value": "type1"
+							"value": "tra"
 						}
 					]
 				}
@@ -135,38 +126,29 @@
 			"response": []
 		},
 		{
-			"name": "http://localhost:8001/todos/type/10",
+			"name": "http://localhost:8001/todos/title/Goa",
 			"request": {
-				"method": "PUT",
+				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"type\": \"type2\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": "http://localhost:8001/todos/type/10"
+				"url": "http://localhost:8001/todos/title/go"
 			},
 			"response": []
 		},
 		{
-			"name": "http://localhost:8001/todos/content/10",
+			"name": "http://localhost:8001/todos/title/2",
 			"request": {
 				"method": "PUT",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"content\": \"content2\"\r\n}",
+					"raw": "{\r\n    \"type\": \"xyz\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
 						}
 					}
 				},
-				"url": "http://localhost:8001/todos/content/10"
+				"url": "http://localhost:8001/todos/6"
 			},
 			"response": []
 		},
@@ -175,7 +157,28 @@
 			"request": {
 				"method": "DELETE",
 				"header": [],
-				"url": "http://localhost:8001/todos/type/content1"
+				"url": {
+					"raw": "http://localhost:8001/todos?type=QWERT",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8001",
+					"path": [
+						"todos"
+					],
+					"query": [
+						{
+							"key": "type",
+							"value": "QWERT"
+						},
+						{
+							"key": "id",
+							"value": "8",
+							"disabled": true
+						}
+					]
+				}
 			},
 			"response": []
 		}
