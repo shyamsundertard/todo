@@ -1,0 +1,46 @@
+.popup-component{
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    background-color: beige;
+    border-radius: 8px;
+    padding: 4px;
+}
+
+.title-div{
+    display: flex;
+    background-color: transparent;
+    color: black;
+    border: transparent;
+    width: 400px;
+    padding: 2px;
+    outline: none;
+    font-weight: bold;
+}
+
+
+.content-div{
+    display: flex;
+    background-color: transparent;
+    color: black;
+    border: transparent;
+    width: 400px;
+    padding: 2px;
+    outline: none;
+}
+
+.button-div{
+    display: flex;
+    justify-content: flex-end;
+    gap: 5px;
+}
+
+.close-div{
+    display: flex;
+    order: 1;
+}
+
+.delete-div{
+    display: flex;
+    
+}

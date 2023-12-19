@@ -8,8 +8,17 @@ datasource db {
 }
 
 model todo {
-  todo_id Int     @id @default(autoincrement())
-  title   String? @db.VarChar(50)
-  type    String? @db.VarChar(50)
-  content String? @db.VarChar(300)
+  todo_id   Int        @id @default(autoincrement()) @unique
+  title     String?     @db.VarChar(100)
+  content   String?    @db.VarChar(1000)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  label     Label?      @relation(fields:[labelId], references: [id])
+  labelId   Int? 
+}
+
+model Label {
+  id          Int       @id @default(autoincrement())
+  labelName   String?    @unique
+  todos       todo[]
 }

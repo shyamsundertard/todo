@@ -1,0 +1,153 @@
+<head>
+    <title>
+        Todo App
+    </title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<script>
+    function deleteDone(id){
+        console.log("Todo deleted");
+        var parentElement= document.getElementById("mainArea");
+
+        var dId = 'div' + parseInt(id);
+
+        var childElement = document.getElementById(dId);
+
+        parentElement.removeChild(childElement)
+    }
+    function deleteCallback(res){
+        res.json().then(deleteDone);
+    }
+    function deleteTodo(id){
+        console.log(id);
+        fetch("http://localhost:8001/todos/" +id,{
+            method: "DELETE"
+
+        }).then(deleteCallback);
+    }
+
+    function todosCallback(data){
+    var parentElement= document.getElementById("mainArea");
+    
+    for( var i =0; i<data.length; i++){
+        var childElement = document.createElement("div");
+        childElement.id = 'div' + data[i].todo_id;
+        childElement.className = "childDiv";
+
+        var grandChildElement1 = document.createElement("span");
+        grandChildElement1.innerHTML = data[i].title;
+        grandChildElement1.className = "gChild1Span";
+
+        var grandChildElement2 = document.createElement("span");
+        grandChildElement2.innerHTML = data[i].label;
+        grandChildElement2.className = "gChild2Span";
+
+        var grandChildElement3 = document.createElement("span");
+        grandChildElement3.innerHTML = data[i].content;
+        grandChildElement3.className = "gChild3Span";
+
+        var grandChildElement4 = document.createElement("button");
+        grandChildElement4.innerHTML = "Delete";
+        grandChildElement4.className = "dButton";
+        grandChildElement4.setAttribute("onclick", "deleteTodo(" + data[i].todo_id + ")");
+
+        childElement.appendChild(grandChildElement1)
+        childElement.appendChild(grandChildElement2)
+        childElement.appendChild(grandChildElement3)
+        childElement.appendChild(grandChildElement4)
+
+        parentElement.appendChild(childElement);
+    }
+    }
+    function getDataCallback(res){
+        res.json().then(todosCallback);
+    }
+
+    function getData(){
+        fetch("http://localhost:8001/todos",{
+            method: "GET"
+                                    
+        }).then(getDataCallback);
+    }
+    getData();
+
+
+    function parsedResponse(data){
+        console.log(data);
+        var parentElement= document.getElementById("mainArea");
+
+        var childElement = document.createElement("div");
+        childElement.id = 'div' + data.todo_id;
+        childElement.className = "childDiv";
+
+        var grandChildElement1 = document.createElement("span");
+        grandChildElement1.innerHTML = data.title;
+        grandChildElement1.className = "gChild1Span";
+
+        var grandChildElement2 = document.createElement("span");
+        grandChildElement2.innerHTML = data.label;
+        grandChildElement2.className = "gChild2Span";
+
+        var grandChildElement3 = document.createElement("span");
+        grandChildElement3.innerHTML = data.content;
+        grandChildElement3.className = "gChild3Span";
+
+        var grandChildElement4 = document.createElement("button");
+        grandChildElement4.innerHTML = "Delete";
+        grandChildElement4.className = "dButton";
+        grandChildElement4.setAttribute("onclick", "deleteTodo(" + data.todo_id + ")");
+
+        childElement.appendChild(grandChildElement1)
+        childElement.appendChild(grandChildElement2)
+        childElement.appendChild(grandChildElement3)
+        childElement.appendChild(grandChildElement4)
+
+        parentElement.appendChild(childElement);
+    }
+    function callback(res){
+        res.json().then(parsedResponse);
+    }
+    function onPress(){
+        var title = document.getElementById("title").value;
+        var label = document.getElementById("label").value;
+        var content = document.getElementById("content").value;
+
+        fetch("http://localhost:8001/todos",{
+            method: "POST",
+            body: JSON.stringify({
+                title: title,
+                label: label,
+                content:content
+            }),
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }).then(callback)
+    }
+</script>
+<body>
+    <div class="div">
+    <div class="topDiv">
+    <div class="addDiv">
+    <div class="title">
+        Todo title
+    <input type="text" id = "title"></input>
+    </div>
+    <div class="label">
+        Todo label
+        <input type="text" id="label"></input>
+    </div>
+    <div class="content">
+        Todo content
+    <input type="text" id="content"></input>
+    </div>
+    <div class="button">
+        Add a Todo
+        <button onclick="onPress()">Add</button>
+    </div>
+    </div>
+    </div>
+    <div class="mainArea" id="mainArea">
+    </div>
+</div>
+</body>

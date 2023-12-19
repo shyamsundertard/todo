@@ -1,0 +1,17 @@
+.label-list{
+    display: flex;
+    background-color: red;
+    flex-direction: column;
+    min-width: 200px;
+    width: 200px;
+    padding: 20px;
+}
+
+.label-container{
+    display: flex;
+    background-color: aliceblue;
+    border: 1px black solid;
+    border-radius: 8px;
+    width: 100%;
+    padding: 3px;
+}
