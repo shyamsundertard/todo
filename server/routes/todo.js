@@ -93,6 +93,7 @@ todoRoutes.get("/todos", async(req, res)  =>{
         data: {
           title: req.body.title,
           content: req.body.content,
+          userId:1,
          
         },
       });
@@ -110,10 +111,38 @@ todoRoutes.get("/todos", async(req, res)  =>{
 
   //Update Todo by id
   todoRoutes.put('/todos/:id',async(req,res)=>{
+
     try {
       const {id} = req.params;
-      const {title,content} = req.body;
+      const {title,content,labelName} = req.body;
       const updateData ={};
+
+      if(labelName){
+        const label = await prisma.label.findUnique({
+          where:{
+            labelName:labelName
+          }
+        });
+
+        if(label){
+          const labelId = label.id;
+        updateData.labelId = labelId;
+        }else{
+           await prisma.label.create({
+            data:{
+              labelName:labelName,
+            }
+          });
+          const label = await prisma.label.findUnique({
+            where:{
+              labelName:labelName
+            }
+          });
+          const labelId = label.id;
+        updateData.labelId = labelId;
+        }
+        
+      }
 
       if (title) {
         updateData.title = title;
@@ -123,11 +152,15 @@ todoRoutes.get("/todos", async(req, res)  =>{
         updateData.content = content;
       }
 
-      const updateTodo = await prisma.todo.update({
+       await prisma.todo.update({
         where:{
           todo_id: parseInt(id)
         },
-        data:updateData
+        data:{
+          title: updateData.title,
+          content:updateData.content,
+          labelId: updateData.labelId,
+        }
       });
       res.json("Todo updated successfully");
       
@@ -138,12 +171,13 @@ todoRoutes.get("/todos", async(req, res)  =>{
     }
   });
 
+
   // Delete todo 
   todoRoutes.delete('/todos/:id', async(req,res)=>{
   try {
     const id = req.params.id;
 
-    const deleteTodo = await prisma.todo.delete({
+     await prisma.todo.delete({
       where: {
             todo_id : parseInt(id)
           

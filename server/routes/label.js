@@ -65,6 +65,7 @@ const prisma = new PrismaClient();
       const label = await prisma.label.create({
         data: {
           labelName: req.body.labelName,
+          userId:1,
         },
       });
       res.json(label);      
@@ -103,7 +104,8 @@ const prisma = new PrismaClient();
   labelRoutes.delete("/labels/:id", async(req, res)=>{
       try {
         const {id} = req.params;
-      const deleteLabel = await prisma.label.delete({
+        
+         await prisma.label.delete({
         where:{
           id: parseInt(id),
         }

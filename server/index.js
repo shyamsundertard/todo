@@ -1,13 +1,12 @@
-import { PrismaClient } from '@prisma/client'
 import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
-import todoRoutes from './todo.js';
-import labelRoutes from './label.js';
+import todoRoutes from './routes/todo.js';
+import labelRoutes from './routes/label.js';
+import userRoutes from './routes/user.js';
 
 
 const app = express();
-const prisma = new PrismaClient();
 
 
 app.use(bodyParser.json());
@@ -20,6 +19,9 @@ app.use('/', todoRoutes);
 // Labels
 app.use('/',labelRoutes);
 
+// Users
+app.use('/',userRoutes);
+
 
 // for all other routes, return 404
 app.use((req, res, next) => {
@@ -31,4 +33,3 @@ const port = 8001;
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
-

@@ -15,10 +15,25 @@ model todo {
   updatedAt DateTime   @updatedAt
   label     Label?      @relation(fields:[labelId], references: [id])
   labelId   Int? 
+  user      User        @relation(fields: [userId], references: [id])
+  userId    Int
 }
 
 model Label {
   id          Int       @id @default(autoincrement())
   labelName   String?    @unique
+  user      User        @relation(fields: [userId], references: [id])
+  userId    Int
   todos       todo[]
+}
+
+model User {
+  id         Int       @id @default(autoincrement())
+  email      String    @unique
+  firstName  String    @db.VarChar(50)
+  lastName   String    @db.VarChar(50)
+  createdAt  DateTime  @default(now())
+  password   String    
+  todos      todo[]
+  labels     Label[]
 }
