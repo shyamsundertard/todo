@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import "../styles/PopupComponent.css";
-
 
 const PopupComponent = (props) => {
     const [todo, setTodo] = useState(props.todo);
@@ -38,30 +37,33 @@ const PopupComponent = (props) => {
 
   return (
     <>
-    <div className='popup-component'>
-    <div onClick={props.handleTodoClick} ></div>
+    <div className='popupComponent'>
     <div>
-    <input className='title-div'
+    <input className='titleDiv'
     defaultValue={todo.title}
     onChange={(e)=>setTitle(e.target.value)}
 
     />
     </div>
     <div>
-    <input className='content-div'
+    <input className='contentDiv'
     defaultValue={todo.content}
-    onChange={(e)=>setContent(e.target.value)}
+    autoFocus
+    onChange={(e)=>setContent(e.target.value)
+    }
 
     />
     </div>
-    <div className='button-div'>    
-    <button className='close-div' onClick={()=>{
+    <div className='buttonDiv'>    
+    <button className='closeDiv' onClick={()=>{
         todoUpdate(todo.todo_id);
-        props.handleTodoClose()
+        props.handleTodoClose(),
+        window.location.reload()
         }}>Close</button>
-    <button className='delete-div' onClick={()=>{
+    <button className='deleteDiv' onClick={()=>{
         handleRemove(todo.todo_id);
-        props.handleTodoClose()
+        props.handleTodoClose(),
+        window.location.reload()
         }}>Delete</button>
         </div>
     </div>

@@ -1,13 +1,19 @@
-.popup-component{
+html, body {
+    margin:0;
+    padding: 0;
+    height:100%;
+  }
+  
+.popupComponent{
     display: flex;
     flex-direction: column;
     gap: 3px;
-    background-color: beige;
+    background-color: white;
     border-radius: 8px;
     padding: 4px;
 }
 
-.title-div{
+.titleDiv{
     display: flex;
     background-color: transparent;
     color: black;
@@ -19,7 +25,7 @@
 }
 
 
-.content-div{
+.contentDiv{
     display: flex;
     background-color: transparent;
     color: black;
@@ -29,18 +35,45 @@
     outline: none;
 }
 
-.button-div{
+.buttonDiv{
     display: flex;
     justify-content: flex-end;
     gap: 5px;
 }
 
-.close-div{
+.closeDiv{
     display: flex;
     order: 1;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    padding: 0.2em 0.4em;
+    font-size: 1em;
+    font-weight: 500;
+    font-family: inherit;
+    background-color: #f9f9f9;
+    color: #1a1a1a;
+    cursor: pointer;
+    transition: border-color 0.5s;
+}
+.closeDiv:hover{
+    border-color: #8789a8;
 }
 
-.delete-div{
+.deleteDiv{
     display: flex;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    padding: 0.2em 0.4em;
+    font-size: 1em;
+    font-weight: 500;
+    font-family: inherit;
+    background-color: #f9f9f9;
+    color: #1a1a1a;
+    cursor: pointer;
+    transition: border-color 0.5s;
     
+}
+
+.deleteDiv:hover{
+    border-color: #8789a8;
 }

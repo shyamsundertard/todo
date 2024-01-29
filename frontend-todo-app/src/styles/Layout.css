@@ -1,0 +1,33 @@
+html, body {
+    margin:0;
+    padding: 0;
+    height:100%;
+}
+
+.lrafyfobudvt{
+    display: flex;
+    flex-direction: column;
+}
+
+.navbar-dshbd{
+    position: fixed;
+    width: 100%;
+    min-height: 63px;
+    height: 63px;
+    background: white ;
+}
+
+.division{
+    display: flex;
+    border: 0.5px solid lightgray;
+    margin-top: 5px;
+    background: wheat;
+}
+
+
+.mainPageContainer{
+    display: flex;
+    margin-top: 80px;
+    justify-content: center;
+}
+

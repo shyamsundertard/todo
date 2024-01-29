@@ -36,30 +36,33 @@ const SECRET = process.env.SECRET;
       return res.status(500).json({
         error: error.message,
       });
+    }finally {
+      await prisma.$disconnect();
     }
   });
 
+
     // userById
-  //   userRoutes.post('/user/:id', async(req, res) => {
-  // try{
-  //   const id = req.params.id;
-  //   const user = await prisma.label.findUnique({
-  //     where: {
-  //       id: parseInt(id)
-  //     }
-  //   });
-  //   if (user) {
-  //     res.json(user);
-  //   } else {
-  //     res.json("User not exist");
-  //   }
+    userRoutes.post('/user/:id', async(req, res) => {
+  try{
+    const id = req.params.id;
+    const user = await prisma.label.findUnique({
+      where: {
+        id: parseInt(id)
+      }
+    });
+    if (user) {
+      res.json(user);
+    } else {
+      res.json("User not exist");
+    }
     
-  // }catch(error){
-  //   res.json("some error");
-  // }finally {
-  //   await prisma.$disconnect();
-  // }
-  // });
+  }catch(error){
+    res.json("some error");
+  }finally {
+    await prisma.$disconnect();
+  }
+  });
 
  // Todos of user  
 //  userRoutes.post('/todos/user/:user', async(req, res) => {
@@ -108,6 +111,8 @@ const SECRET = process.env.SECRET;
       return res.status(500).json({
         error: error.message,
       });
+    }finally {
+      await prisma.$disconnect();
     }
   });
 
@@ -134,30 +139,25 @@ const SECRET = process.env.SECRET;
   
   
   // Delete User
-  // userRoutes.delete("/users/:id", async(req, res)=>{
-  //     try {
-  //       const {id} = req.params;
-        
-  //        await prisma.user.delete({
-  //       where:{
-  //         id: parseInt(id),
-  //       }
-  //     })
-  //     res.json(id);
-  //     } catch (e) {
-  //       res.status(404).json(e);
-  //     }finally {
-  //       await prisma.$disconnect();
-  //     }
-  // });
+userRoutes.delete("/user/:id", async(req, res)=>{
+    try {   
+      const id = req.params.id;
+        await prisma.user.delete({
+          where:{
+               id: parseInt(id)
+          },
+        });
+        res.json(id);
+
+    } catch (e) {
+      res.status(404).json(e);
+    }finally {
+      await prisma.$disconnect();
+    }
+});
 
 // Login
 userRoutes.post('/login',loginValidation ,validationMiddleware , async(req, res) => {
-
-  // const payload = {
-  //   email: req.body.email,
-  //   password: req.body.password
-  // };
 
   try {
     const token = sign(req.body, SECRET);
@@ -168,27 +168,71 @@ userRoutes.post('/login',loginValidation ,validationMiddleware , async(req, res)
     .json({
       message: 'Logged in successfully',
     });
+    
   } catch (error) {
     console.log(error.message);
     return res.status(500).json({
       error: error.message,
     });
+  }finally {
+    await prisma.$disconnect();
   }
 });
 
 // Protected route
-userRoutes.post("/protectedEndpoint",userAuth, async (req, res) => {
+userRoutes.post("/protectedInfo/:email",userAuth, async (req, res) => {
   try {
-      return res.status(200).json({
-          info: 'Protected info',
-      });
+    const email = req.params.email;
+    const user = await prisma.user.findUnique({
+      where: {
+        email: email
+      },
+      select: {
+        todos:true
+      }
+    });
+    if (user) {
+      res.json(user);
+    } else {
+      res.json("User not exist");
+    }
   } catch (error) {
       console.log(error.message);
+  }finally {
+    await prisma.$disconnect();
   }
 });
 
+// Protected route
+userRoutes.post("/protectedInfo",userAuth, async (req, res) => {
+  try {
+    const user = req.user;
+    // console.log(user);
+
+    const todos = await prisma.todo.findMany({
+      where:{
+        userId: parseInt(user.id),
+      }
+    })
+    // console.log(todos)
+
+    return res.status(200).json({
+      todos:todos,
+      user:user
+    });
+    
+  } catch (error) {
+    console.log(error.message);
+    return res.status(500).json({
+      error: error.message,
+    });
+  }finally {
+        await prisma.$disconnect();
+      }
+});
+
 // logout
-userRoutes.post ("/logout",userAuth , async (req, res) => {
+userRoutes.post ("/logout" , async (req, res) => {
   try {
     return res
     .status(200)
@@ -201,8 +245,9 @@ userRoutes.post ("/logout",userAuth , async (req, res) => {
     return res.status(500).json({
       error: error.message,
     })
+  }finally {
+    await prisma.$disconnect();
   }
-}
-);
+});
 
 export default userRoutes;

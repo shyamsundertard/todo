@@ -35,6 +35,30 @@ todoRoutes.get("/todos", async(req, res)  =>{
   }
   });
 
+     // todosByEmail
+     todoRoutes.get('/todos/:email', async(req, res) => {
+      try{
+        const email = req.params.email;
+        const user = await prisma.user.findUnique({
+          where: {
+            email: email,
+          }
+        });
+
+        const todos = await prisma.todo.findMany({
+          where:{
+            userId: user.id
+          }
+        })
+        console.log("hi")
+        res.json(todos);
+      }catch(error){
+        res.json("Todo not exist");
+      }finally {
+        await prisma.$disconnect();
+      }
+      });
+
   // Title  
   todoRoutes.get('/todos/title/:title', async(req, res) => {
   try {
@@ -86,19 +110,18 @@ todoRoutes.get("/todos", async(req, res)  =>{
   });
 
   // In Database
-  todoRoutes.post('/todos', async(req, res) => {
+  todoRoutes.post('/createTodo/:id', async(req, res) => {
     try {
-      
+      const userId = req.params.id;
       const todo = await prisma.todo.create({
         data: {
           title: req.body.title,
           content: req.body.content,
-          userId:1,
+          userId:parseInt(userId),
          
         },
       });
       res.json(todo);
-      
       
     } catch (e) {
       console.error(e);
