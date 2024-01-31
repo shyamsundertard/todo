@@ -4,7 +4,7 @@ const ClickAlert =(props)=>{
     const wrapperRef =useRef(null);
 
     useEffect(()=>{
-        const handleClickOutside = (e) =>{
+        const handleClickOutside = async(e) =>{
             if (wrapperRef.current && !wrapperRef.current.contains(e.target)){
                 if(props.activeFunction === "handleCreate"){
                 props.handleCreate();

@@ -24,7 +24,8 @@ const SECRET = process.env.SECRET;
           firstName: true,
           lastName: true,
           createdAt: true,
-          todos: true
+          todos: true,
+          labels: true
         } 
       });
   
@@ -180,45 +181,50 @@ userRoutes.post('/login',loginValidation ,validationMiddleware , async(req, res)
 });
 
 // Protected route
-userRoutes.post("/protectedInfo/:email",userAuth, async (req, res) => {
-  try {
-    const email = req.params.email;
-    const user = await prisma.user.findUnique({
-      where: {
-        email: email
-      },
-      select: {
-        todos:true
-      }
-    });
-    if (user) {
-      res.json(user);
-    } else {
-      res.json("User not exist");
-    }
-  } catch (error) {
-      console.log(error.message);
-  }finally {
-    await prisma.$disconnect();
-  }
-});
+// userRoutes.post("/protectedInfo/:email",userAuth, async (req, res) => {
+//   try {
+//     const email = req.params.email;
+//     const user = await prisma.user.findUnique({
+//       where: {
+//         email: email
+//       },
+//       select: {
+//         todos:true
+//       }
+//     });
+//     if (user) {
+//       res.json(user);
+//     } else {
+//       res.json("User not exist");
+//     }
+//   } catch (error) {
+//       console.log(error.message);
+//   }finally {
+//     await prisma.$disconnect();
+//   }
+// });
 
 // Protected route
 userRoutes.post("/protectedInfo",userAuth, async (req, res) => {
   try {
     const user = req.user;
-    // console.log(user);
 
     const todos = await prisma.todo.findMany({
       where:{
         userId: parseInt(user.id),
       }
     })
-    // console.log(todos)
 
+    const labels = await prisma.label.findMany({
+      where:{
+        userId: parseInt(user.id),
+      }
+    })
+    
     return res.status(200).json({
       todos:todos,
-      user:user
+      user:user,
+      labels:labels
     });
     
   } catch (error) {

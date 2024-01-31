@@ -25,6 +25,7 @@ html, body {
     outline: none;
     height: 35px;
     padding-left: 10px;
+    width: 100%;
 }
 
 .create-content-div{
@@ -33,6 +34,7 @@ html, body {
     outline: none;
     padding-bottom: 5px;
     padding-left: 10px;
+    width: 100%;
 }
 
 .bottom-bar{

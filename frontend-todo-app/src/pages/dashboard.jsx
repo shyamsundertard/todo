@@ -5,7 +5,6 @@ import PopupComponent from '../components/PopupComponent'
 import NewTodo from '../components/NewTodo'
 import "../styles/Dashboard.css"
 import ClickAlert from '../components/ClickAlert'
-// import {todoUpdate, todoRemove} from "../components/PopupComponent"
 
 const Dashboard = () => {
   const [loading, setLoading] = useState(true)
@@ -15,6 +14,7 @@ const Dashboard = () => {
   const [showTodo, setShowTodo]= useState(false)
   const [showForm, setShowForm] = useState(false)
   const [showBar, setShowBar] = useState(true)
+  const [labels, setLabels] = useState([]);
 
   const handleCreate =()=>{
     setShowForm(false),
@@ -26,6 +26,7 @@ const Dashboard = () => {
       const { data } = await fetchProtectedInfo()
       setUser(data.user);
       setProtectedData(data.todos);
+      setLabels(data.labels);
     } catch (error) {
       console.error("error occured")
     }finally {
@@ -33,11 +34,10 @@ const Dashboard = () => {
     }
   };
 
-
   useEffect(() => {
     protectedInfo()
   }, []);
-  
+
 
   const handleTodoClick =()=>{
     setShowTodo(true);
@@ -57,7 +57,13 @@ const Dashboard = () => {
           <div className='labelContainerBox'>
           <div className='labelContainerParent'>
           <div className='labelContainer'>
-            <h6>Hi</h6>
+        {labels.map((label) => (
+              <div key={label.id}  
+              className="labels">
+             <div><b>{label.labelName}</b></div>
+              
+              </div>
+            ))}
           </div>
           </div>
           </div>
@@ -73,7 +79,7 @@ const Dashboard = () => {
                 autoFocus
                 onClick={()=>{setShowForm(true),setShowBar(false)}}
                 /> }
-              {showForm && <NewTodo user={user} showBar={showBar} handleCreate = {handleCreate} />}
+              {showForm && <NewTodo user={user} handleCreate = {handleCreate} />}
               </div>
             </div>
             </ClickAlert>

@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import '../styles/NewTodo.css'
+// import ClickAlert from "./ClickAlert";
 
 const NewTodo=(props)=>{
     const [title, setTitle]= useState("")

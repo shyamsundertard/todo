@@ -5,8 +5,12 @@ const labelRoutes = Router();
 const prisma = new PrismaClient();
 
   //Get labels
-  labelRoutes.get("/labels", async (req,res)=>{
+  labelRoutes.get("/labels/:id", async (req,res)=>{
+    const id = req.params;
     const labels = await prisma.label.findMany({
+      where:{
+        userId : parseInt(id)
+      }
 
     })
     res.json(labels);
@@ -15,7 +19,7 @@ const prisma = new PrismaClient();
     // labelById
     labelRoutes.get('/label/:id', async(req, res) => {
   try{
-    const id = req.params.id;
+    const id = req.params;
     const label = await prisma.label.findUnique({
       where: {
         id: parseInt(id)
@@ -65,7 +69,7 @@ const prisma = new PrismaClient();
       const label = await prisma.label.create({
         data: {
           labelName: req.body.labelName,
-          userId:1,
+          userId:4,
         },
       });
       res.json(label);      

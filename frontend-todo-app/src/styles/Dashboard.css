@@ -24,11 +24,32 @@ html, body {
 
 .labelContainer{
     display: flex;
+    flex-direction: column;
     min-width: 285px;
     width: 285px;
     height: 500px;
     padding: 10px;
     order: -1;
+    gap: 1px;
+}
+
+.labels{
+    display: flex;
+    align-items: center;
+    letter-spacing: .01428571em;
+    font-family: Roboto,Arial,sans-serif;
+    font-size: .900rem;
+    font-weight: 300;
+    line-height: 1.25rem;
+    padding-left: 25px;
+    height: 48px;
+    width: 100%;
+    border-top-right-radius: 30px;
+    border-bottom-right-radius: 30px;
+}
+
+.labels:hover{
+    background-color: rgb(246, 243, 243);
 }
 
 .mainContainerParent{

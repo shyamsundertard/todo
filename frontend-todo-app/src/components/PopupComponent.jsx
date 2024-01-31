@@ -57,8 +57,8 @@ const PopupComponent = (props) => {
     <div className='buttonDiv'>    
     <button className='closeDiv' onClick={()=>{
         todoUpdate(todo.todo_id);
-        props.handleTodoClose(),
-        window.location.reload()
+        props.handleTodoClose()
+        // window.location.reload()
         }}>Close</button>
     <button className='deleteDiv' onClick={()=>{
         handleRemove(todo.todo_id);
